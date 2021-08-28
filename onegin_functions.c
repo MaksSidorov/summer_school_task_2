@@ -18,8 +18,9 @@ char *my_fgets(char buffer_string[], int number_symbols, FILE *stream) {
 }
 
 int cmpfunc(const void * a, const void * b) {
-    const char *p1 = (const char *) a, *p2 = (const char *) b;
-    while (*p1 != '\0' && *p2 != '\0') {
+    const char *p1 = *(const char **) a;
+    const char *p2 = *(const char **) b;
+    while (*p1 != '\0' && *p2 != '\0' ) {
         while (!isalpha (*p1) && !isdigit(*p1)) {
             p1++;
         }
@@ -42,30 +43,30 @@ int cmpfunc(const void * a, const void * b) {
     if (*p1 == '\0') {
         return 1;
     }
-    else if (*p1 != '\0' && *p2 == '\0') {
+    else if (*p1 == '\0') {
         return -1;
     }
     return 0;
 }
 
-int get_all_text(char line_buffer[], const char file_path[]) {
-    FILE *input_file_pointer = fopen(file_path, "r");
-
-    if (!input_file_pointer) {
-        return READ_FILE_ERROR;
-    }
-    char line_buf[MAX_NUMBER_STRINGS][MAX_STRING_LENGTH];
-
-    int lines_counter = 0;
-    while (lines_counter < MAX_NUMBER_STRINGS) {
-        if (my_fgets(line_buf[lines_counter], MAX_STRING_LENGTH, input_file_pointer) != NULL) {
-            lines_counter++;
-        }
-    }
-
-    fclose(input_file_pointer);
-
-    return 0;
-}
+//int get_all_text(char line_buffer[], const char file_path[]) {
+//    FILE *input_file_pointer = fopen(file_path, "r");
+//
+//    if (!input_file_pointer) {
+//        return READ_FILE_ERROR;
+//    }
+//    char line_buf[MAX_NUMBER_STRINGS][MAX_STRING_LENGTH];
+//
+//    int lines_counter = 0;
+//    while (lines_counter < MAX_NUMBER_STRINGS) {
+//        if (my_fgets(line_buf[lines_counter], MAX_STRING_LENGTH, input_file_pointer) != NULL) {
+//            lines_counter++;
+//        }
+//    }
+//
+//    fclose(input_file_pointer);
+//
+//    return 0;
+//}
 
 

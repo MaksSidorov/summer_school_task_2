@@ -4,27 +4,47 @@ int main() {
 
     FILE *input_file_pointer = fopen(DEFAULT_INPUT_FILENAME, "r");
 
-    if (!input_file_pointer) {
-        printf("Error opening file %s", DEFAULT_INPUT_FILENAME);
-        return READ_FILE_ERROR;
-    }
-    
-    char line_buffer[MAX_NUMBER_STRINGS][MAX_STRING_LENGTH];
+    fseek(input_file_pointer, 0L, SEEK_END);
+
+    long file_size = ftell(input_file_pointer);
+    char *text = (char *) calloc(file_size, sizeof(char));
+
+    fseek(input_file_pointer, 0, SEEK_SET);
+
+    fread(text, sizeof(char), file_size, input_file_pointer);
 
     int lines_counter = 0;
-    while (lines_counter < MAX_NUMBER_STRINGS) {
-        if (my_fgets(line_buffer[lines_counter], MAX_STRING_LENGTH, input_file_pointer) != NULL) {
-            lines_counter++;
+    for (char *str_pointer = text; str_pointer!=NULL && *str_pointer!='\0'; str_pointer=strchr(str_pointer+1, '\n') ){
+        lines_counter++;
+    }
+
+    char **strings_pointers = (char **) calloc(lines_counter + 1, sizeof(char *));
+
+    for (char *str_pointer = text, flag = 0; str_pointer!=NULL && *str_pointer!='\0'; str_pointer=strchr(str_pointer+1, '\n')){
+        if (flag) {
+            *strings_pointers = str_pointer + 1;
+            *(*strings_pointers - 1) = '\0';
+            strings_pointers++;
+        }
+        else {
+            *strings_pointers = str_pointer;
+            strings_pointers++;
+            flag = 1;
         }
     }
-    fclose(input_file_pointer);
 
-    qsort(line_buffer, MAX_NUMBER_STRINGS, sizeof(char) * MAX_STRING_LENGTH, cmpfunc);
+    strings_pointers -= lines_counter;
+
+    qsort(strings_pointers, lines_counter, sizeof(char*), cmpfunc);
+
+    puts(*strings_pointers);
 
     FILE *output_file_pointer = fopen(DEFAULT_OUTPUT_FILENAME, "w");
-    for(int i = 0; i < MAX_NUMBER_STRINGS; i++) {
-        fprintf(output_file_pointer, "%s", line_buffer[i]);
+    for(int i = 0; i < lines_counter; i++) {
+
+        fprintf(output_file_pointer, "%s\n", *(strings_pointers + i));
     }
+
 
     return 0;
 }
